@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      button {
+        margin: 20px;
+      }
+      .progress,
+      .loader {
+        height: 10px;
+        border-radius: 10px;
+      }
+
+      .progress {
+        width: 400px;
+        position: relative;
+        background: lightgray;
+      }
+
+      .loader {
+        position: absolute;
+        background-color: red;
+        width: 0;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h3>Example of Fetch API progress tracker. Click start for demo.</h3>
+
+    <button id="start">Start</button>
+
+    <br>
+    <h1  style="display:none" >Downloading file ...</h1>
+
+    <div class="progress">
+      <div class="loader"></div>
+    </div>
+
+    <script>
+      const btn = document.querySelector("#start");
+      const loader = document.querySelector(".loader");
+      const msg = document.querySelector("h1");
+
+      btn.addEventListener("click", async (e) => {
+        let url = "/data";
+
+        const response = await fetch(url);
+        msg.style.display = "block"
+        const contentLength = response.headers.get("size");
+        let downloaded = 0;
+
+        const reader = response.body.getReader();
+        const pump = () => {
+          reader.read().then(({ done, value }) => {
+            if (done) {
+              alert("Download complete ...");
+              return;
+            }
+
+            downloaded += value.length;
+            const percent = contentLength
+              ? Math.round((downloaded / contentLength) * 100)
+              : 0;
+            loader.style.width = `${percent}%`;
+
+            pump();
+          });
+        };
+
+        pump();
+      });
+    </script>
+  </body>
+</html>

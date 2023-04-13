@@ -62,6 +62,7 @@
         const pump = () => {
           reader.read().then(({ done, value }) => {
             if (done) {
+              msg.style.display = "none"
               alert("Download complete ...");
               return;
             }
